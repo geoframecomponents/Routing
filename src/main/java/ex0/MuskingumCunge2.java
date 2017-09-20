@@ -34,11 +34,15 @@ public class MuskingumCunge2 {
     double valueFromAboveVert1;
     double valueFromAboveVert2;
     double valueinComputation;
+    
+    double muskingumTot;
 
     @Execute
     public void exec() {
 
         outSum = new HashMap<Integer, double[]>();
+        
+        System.out.println("Musk2");
 
         Iterator<Entry<Integer, double[]>> iterVert1 = inFromAboveVert1.entrySet().iterator();
         Iterator<Entry<Integer, double[]>> iterVert2 = inFromAboveVert2.entrySet().iterator();
@@ -46,10 +50,12 @@ public class MuskingumCunge2 {
         Iterator<Entry<Integer, double[]>> iter2 = inComputation.entrySet().iterator();
         
         
-        double muskingum1=C2_FromAboveVert1*valueFromAboveVert1+C3_FromAboveVert1*valueinComputation;
-        double muskingum2=C2_FromAboveVert2*valueFromAboveVert2+C3_FromAboveVert2*valueinComputation;
+        double muskingum1=C2_FromAboveVert1*valueFromAboveVert1+C3_FromAboveVert1*(muskingumTot);
+        double muskingum2=C2_FromAboveVert2*valueFromAboveVert2+C3_FromAboveVert2*(muskingumTot);
 
         while(iterVert1.hasNext() || iter2.hasNext()) {
+        	
+        	System.out.println("Musk2");
 
             Entry<Integer, double[]> eVert1 = iterVert1.next();
             Integer keyVert1 = eVert1.getKey();
@@ -66,9 +72,9 @@ public class MuskingumCunge2 {
             double[] val2 = e2.getValue();
             valueinComputation=val2[0];
             
-            double muskingumTot=C1_FromAboveVert1*valueFromAboveVert1+
+            muskingumTot=C1_FromAboveVert1*valueFromAboveVert1+
             					C1_FromAboveVert2*valueFromAboveVert2+
-            					muskingum1+muskingum2;
+            					muskingum1+muskingum2+valueinComputation;
 
             // add check on equals key: MUST BE EQUAL
             //double[] outval = new double[]{val1[0] + val2[0]};
