@@ -27,7 +27,8 @@ public class MuskingumCunge1 {
     
 
     double valueFromAboveVert;
-    double valueComputation;
+    double valueinComputation;
+    double muskingumTot;
     
 
     @Execute
@@ -39,7 +40,7 @@ public class MuskingumCunge1 {
         Iterator<Entry<Integer, double[]>> iter2 = inComputation.entrySet().iterator();
         
         
-        double muskingum=C2*valueFromAboveVert+C3*valueComputation;
+        double muskingum=C2*valueFromAboveVert+C3*muskingumTot;
         
         while(iter1.hasNext() || iter2.hasNext()) {
 
@@ -51,9 +52,9 @@ public class MuskingumCunge1 {
             Entry<Integer, double[]> e2 = iter2.next();
             Integer key2 = e2.getKey();
             double [] val2 = e2.getValue();
-            valueComputation=val2[0];
+            valueinComputation=val2[0];
             
-            double muskingumTot=C1*valueFromAboveVert+muskingum;
+            muskingumTot=C1*valueFromAboveVert+muskingum+valueinComputation;
 
             // add check on equals key: MUST BE EQUAL
             //double[] outval = new double[]{val1[0] + val2[0]};
