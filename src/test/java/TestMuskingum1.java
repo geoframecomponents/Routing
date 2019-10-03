@@ -5,48 +5,74 @@ import java.util.HashMap;
 
 import org.jgrasstools.gears.io.timedependent.OmsTimeSeriesIteratorReader;
 import org.jgrasstools.gears.io.timedependent.OmsTimeSeriesIteratorWriter;
-import org.jgrasstools.gears.libs.monitor.PrintStreamProgressMonitor;
 import org.junit.Test;
 
-import ex0.MuskingumCunge1;
+import muskingumCunge.MuskingumCunge1;
 
 public class TestMuskingum1{
 
 	@Test
 	public void testLinear() throws Exception {
 
-		String startDate = "1994-01-01 00:00";
-		String endDate = "1994-01-03 23:00";
+		String startDate = "2018-12-20 11:00";
+		String beforeDate = "2018-12-20 10:00";
+		String endDate = "2018-12-20 20:00";
 		int timeStepMinutes = 60;
 		String fId = "ID";
+		
 
-		PrintStreamProgressMonitor pm = new PrintStreamProgressMonitor(System.out, System.out);
-
-		String inpathToQout= "resources/Input/rainfall.csv";
-
+		String inpathToQout= "/Users/marialaura/Desktop/IdrogrammaInput_11_Basento.csv";
+		String inpathToQt= "/Users/marialaura/Desktop/Storico_Idrogramma_11_Basento.csv";
+		String inpathToQt_i= "/Users/marialaura/Desktop/Storico_IdrogrammaInput_11_Basento.csv";
+		String inpathToQ= "/Users/marialaura/Desktop/prova.csv";
 
 		OmsTimeSeriesIteratorReader QoutReader = getTimeseriesReader(inpathToQout, fId, startDate, endDate, timeStepMinutes);
+		OmsTimeSeriesIteratorReader QtReader = getTimeseriesReader(inpathToQt, fId, beforeDate, beforeDate, timeStepMinutes);
+		OmsTimeSeriesIteratorReader Qt_1Reader = getTimeseriesReader(inpathToQt_i, fId, beforeDate, beforeDate, timeStepMinutes);
 		
 		MuskingumCunge1 test= new MuskingumCunge1();
 		
-
+		OmsTimeSeriesIteratorWriter writerQ = new OmsTimeSeriesIteratorWriter();
+		
+		writerQ.file = inpathToQ;
+		writerQ.tStart = startDate;
+		writerQ.tTimestep = timeStepMinutes;
+		writerQ.fileNovalue="-9999";
 
 		while( QoutReader.doProcess ) {
 		
 			QoutReader.nextRecord();
-			test.C1=0.2;
-			test.C2=0.3;
-			test.C3=0.5;
+			test.l=6.56;
+			test.uc=0.70;
+			test.x=0.10;
+			test.ID=11;
 
 	
 			HashMap<Integer, double[]> id2ValueMap = QoutReader.outData;
             test.inComputation= id2ValueMap;
-            test.inFromAboveVert=id2ValueMap;
+            
+            QtReader.nextRecord();
+			id2ValueMap = QtReader.outData;
+			test.initialConditionMusk_i = id2ValueMap;
+			
+            Qt_1Reader.nextRecord();
+			id2ValueMap = Qt_1Reader.outData;
+			test.initialConditionQ_i = id2ValueMap;
             
 
             test.exec();
             
             System.out.println("Finished");
+            
+            HashMap<Integer, double[]> outHMQ= test.outMusk;
+            
+			writerQ.inData = outHMQ ;
+			writerQ.writeNextLine();
+			
+			if (inpathToQ != null) {
+				writerQ.close();
+			}
+			
             
 
 
@@ -55,6 +81,7 @@ public class TestMuskingum1{
 		
 
 		QoutReader.close();
+		QtReader.close();
 		
 
 	}
